@@ -11,8 +11,7 @@
       
   $.widget("ui.customSelect", {
     options: {
-      placeholder: 'Please select some items',
-      showCustom: false
+      placeholder: 'Please select some items'
     },
     _create: function () {
       var self = this,
@@ -42,8 +41,8 @@
       this.window = root.find('.ui-customSelect-window span');
       this.list = root.find('ul');
             
-      self.createFromSelect();
-      self.setWindowText();
+      self._createFromSelect();
+      self._setWindowText();
     
       // Bind events
       self.window.parent().click(function (event) {
@@ -51,7 +50,7 @@
       });
       
       root.delegate('li>input', 'change', function (event) {
-        self.setWindowText();
+        self._setWindowText();
         select.val(self.val()).trigger('change');
         self._trigger('change', event);
       });
@@ -92,11 +91,11 @@
         return this.innerHTML;
       }).toArray();
     },
-    setWindowText: function () {
+    _setWindowText: function () {
       var value = this.friendlyVal();
       this.window.html(value.length ? value.join(', ') : (this.options.placeholder || ''));
     },
-    createFromSelect: function () {
+    _createFromSelect: function () {
       var self = this,
           idCounter = 0;
 
@@ -122,7 +121,7 @@
       });
     },
     reload: function () {
-      this.createFromSelect();
+      this._createFromSelect();
     },
     _setOption: function (name, value) {
       if (name === 'disabled') {
