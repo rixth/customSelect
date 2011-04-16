@@ -7,11 +7,7 @@
 (function ($) {
   var openClass = 'ui-customSelect-open',
       disabledClass = 'ui-customRange-disabled',
-      eventPrefix = 'customselect',
-      focusEvent = eventPrefix + 'focus',
-      blurEvent = eventPrefix + 'blur',
-      disabledEvent = eventPrefix + 'disabled',
-      enabledEvent = eventPrefix + 'enabled';
+      eventPrefix = 'customselect';
       
   $.widget("ui.customSelect", {
     options: {
@@ -28,7 +24,6 @@
         throw new TypeError("jquery.customSelect expects a <select> element.");
       }
       
-      self.isMultipleSelect = select.attr('multiple')
       self.rootId = select.attr('id') + '_customSelect'
       
       // Create the base HTML, the window and dropdown
@@ -47,7 +42,7 @@
       this.window = root.find('.ui-customSelect-window span');
       this.list = root.find('ul');
             
-      self.createItemsFromSelect();
+      self.createFromSelect();
       self.setWindowText();
     
       // Bind events
@@ -61,7 +56,7 @@
         self._trigger('change', event);
       });
 
-      select.bind(focusEvent, function () {
+      select.bind(eventPrefix + 'focus', function () {
         if (!root.hasClass(disabledClass)) {
           isOpen = true;
           root.addClass(openClass);
@@ -71,28 +66,26 @@
             if (!$.contains(root[0], event.target)) {
               self._trigger('blur');
             }
-            // TODO clicks on radios in single selecte
           });
         }
-      }).bind(blurEvent, function () {
+      }).bind(eventPrefix + 'blur', function () {
         $(document).unbind('click.customRange' + self.rootId);
         isOpen = false;
         root.removeClass(openClass);
-      }).bind(disabledEvent, function () {
+      }).bind(eventPrefix + 'disabled', function () {
         root.addClass(disabledClass);
         if (isOpen) {
           self._trigger('blur');
         }
-      }).bind(enabledEvent, function () {
+      }).bind(eventPrefix + 'enabled', function () {
         root.removeClass(disabledClass);
       });
     },
     val: function () {
-      // TODO the setter
       var result = this.root.find('input:checked').map(function () {
         return this.value;
       }).toArray();
-      return this.isMultipleSelect ? result : result[0];
+      return this.isMultiple ? result : result[0];
     },
     friendlyVal: function () {
       return this.root.find('input:checked+label').map(function () {
@@ -103,10 +96,11 @@
       var value = this.friendlyVal();
       this.window.html(value.length ? value.join(', ') : (this.options.placeholder || ''));
     },
-    createItemsFromSelect: function () {
+    createFromSelect: function () {
       var self = this,
           idCounter = 0;
-      
+
+      self.isMultiple = self.element.attr('multiple')
       self.list.empty();
           
       this.element.children().each(function () {
@@ -114,7 +108,7 @@
             id = self.rootId + '_' + (idCounter++),
             label = '<label for="' + id + '">' + element.innerHTML + '</label>',
             input;
-        if (self.isMultipleSelect) {
+        if (self.isMultiple) {
           input = $('<input id="' + id + '" type="checkbox" value="' + element.value + '">');
         } else {
           input = $('<input id="' + id + '" name="' + self.rootId + '_radio" type="radio" value="' + element.value + '">');
@@ -128,7 +122,7 @@
       });
     },
     reload: function () {
-      this.createItemsFromSelect();
+      this.createFromSelect();
     },
     _setOption: function (name, value) {
       if (name === 'disabled') {
