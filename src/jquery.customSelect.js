@@ -54,7 +54,14 @@
         select.val(self.val()).trigger('change');
         self._trigger('change', event);
       });
-
+      
+      if ($.browser.msie && $.browser.version < 9) {
+        $('input').bind('click', function (event) {
+          this.checked = !this.checked;
+          $(this).trigger('change');
+        });
+      }
+      
       select.bind(eventPrefix + 'focus', function () {
         if (!root.hasClass(disabledClass)) {
           isOpen = true;
