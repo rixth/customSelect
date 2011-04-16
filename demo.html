@@ -2,16 +2,46 @@
 <html lang="en-US">
 <head>
   <meta charset="UTF-8">
-  <title>jquery.customSelect</title>  
+  <title>jquery.customSelect</title>
+  <link rel="stylesheet" href="src/jquery.customSelect.css" />
+  <style type="text/css">
+    body {
+      font-family: "Helvetica Neue", "Lucida Grande", "Arial";
+      background: #F8F8F8;
+      background: #ECE9E9 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#ECE9E9))  no-repeat;
+      background: #ECE9E9 -moz-linear-gradient(top, #fff, #ECE9E9) no-repeat;
+      color: #555;
+      font-size: 12px;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+    }
+    #container {
+      width: 200px;
+      padding: 20px;
+    }
+  </style>
 </head>
 <body>
+  
+  <div id="container">
+    <select id="singleSelect">
+      <option value="cola">A glass of cola</option>
+      <option value="lemonade">A class of lemonade</option>
+      <option value="tea">A cup of tea</option>
+    </select>
+    <br>
+    <br>
+    <select id="multipleSelect" multiple>
+      <option value="cake">A tasty cake</option>
+      <option value="burger">A fatty burger</option>
+      <option value="cola">A large cola</option>
+    </select>
+  </div>
   
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
   <script src="src/jquery.customSelect.js"></script>  
   <script>
-    $('#singleSelect').customSelect();
-    $('#multipleSelect').customSelect();
+    $('select').customSelect();
   </script>
 </body>
 </html>

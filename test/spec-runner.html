@@ -20,6 +20,9 @@
 <script type="text/javascript">
   jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
   jasmine.getEnv().execute();
+
+  $('#__jasmine_TrivialReporter_showPassed__').attr('checked', true);
+  $('.jasmine_reporter').addClass('show-passed');
 </script>
 
 </body>
