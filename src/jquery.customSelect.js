@@ -15,25 +15,25 @@
       
   $.widget("ui.customSelect", {
     options: {
-      defaultValue: null,
+      placeholder: 'Please select some items',
       showCustom: false
     },
     _create: function () {
       var self = this,
           select = this.element,
-          isMultipleSelect = select.attr('multiple'),
-          root, rootHtml = [], rootId = select.attr('id') + '_customSelect',
-          isOpen = false,
-          idCounter = 0,
-          selectWindow, selectList;
+          root, rootHtml = [],
+          isOpen = false;
           
       if (!select.is('select')) {
         throw new TypeError("jquery.customSelect expects a <select> element.");
       }
       
+      self.isMultipleSelect = select.attr('multiple')
+      self.rootId = select.attr('id') + '_customSelect'
+      
       // Create the base HTML, the window and dropdown
       rootHtml.push('<div class="ui-customSelect">');
-      rootHtml.push('  <div class="ui-customSelect-window">');
+      rootHtml.push('  <div class="ui-customSelect-window"><span></span>');
       rootHtml.push('    <div class="ui-customSelect-arrow ui-customSelect-downArrow">&#x25BC;</div>');
       rootHtml.push('    <div class="ui-customSelect-arrow ui-customSelect-upArrow">&#x25B2;</div>');
       rootHtml.push('  </div>');
@@ -41,28 +41,24 @@
       rootHtml.push('</div>');
       
       // Place ourselves 
-      this.root = root = $(rootHtml.join('')).attr('id', rootId);
-      select.hide().after(root);
+      this.root = root = $(rootHtml.join('')).attr('id', self.rootId);
+      select.after(root).hide();
       
-      selectWindow = root.find('.ui-customSelect-window');
-      selectList = root.find('ul');
+      this.window = root.find('.ui-customSelect-window span');
+      this.list = root.find('ul');
             
-      // Seed in the items from the select
-      select.children().each(function () {
-        var id = rootId + '_' + (idCounter++),
-            label = '<label for="' + id + '">' + this.innerHTML + '</label>',
-            input;
-        if (isMultipleSelect) {
-          input = '<input id="' + id + '" type="checkbox" value="' + this.value + '">';
-        } else {
-          input = '<input id="' + id + '" name="' + rootId + '_radio" type="radio" value="' + this.value + '">';
-        }
-        selectList.append('<li>' + input + ' ' + label + '</li>');
-      });
+      self.createItemsFromSelect();
+      self.setWindowText();
     
       // Bind events
-      selectWindow.click(function (event) {
+      self.window.parent().click(function (event) {
         self._trigger(isOpen ? 'blur' : 'focus', event);
+      });
+      
+      root.delegate('li>input', 'change', function (event) {
+        self.setWindowText();
+        select.val(self.val()).trigger('change');
+        self._trigger('change', event);
       });
 
       select.bind(focusEvent, function () {
@@ -71,14 +67,15 @@
           root.addClass(openClass);
 
           // Close when a click is detected on something other than the widget
-          $(document).bind('click.customRange', function (event) {
+          $(document).bind('click.customRange' + self.rootId, function (event) {
             if (!$.contains(root[0], event.target)) {
               self._trigger('blur');
-              $(document).unbind('click.customRange');
             }
+            // TODO clicks on radios in single selecte
           });
         }
       }).bind(blurEvent, function () {
+        $(document).unbind('click.customRange' + self.rootId);
         isOpen = false;
         root.removeClass(openClass);
       }).bind(disabledEvent, function () {
@@ -91,15 +88,58 @@
       });
     },
     val: function () {
-      // fetch the value
+      // TODO the setter
+      var result = this.root.find('input:checked').map(function () {
+        return this.value;
+      }).toArray();
+      return this.isMultipleSelect ? result : result[0];
+    },
+    friendlyVal: function () {
+      return this.root.find('input:checked+label').map(function () {
+        return this.innerHTML;
+      }).toArray();
+    },
+    setWindowText: function () {
+      var value = this.friendlyVal();
+      this.window.html(value.length ? value.join(', ') : (this.options.placeholder || ''));
+    },
+    createItemsFromSelect: function () {
+      var self = this,
+          idCounter = 0;
+      
+      self.list.empty();
+          
+      this.element.children().each(function () {
+        var element = this,
+            id = self.rootId + '_' + (idCounter++),
+            label = '<label for="' + id + '">' + element.innerHTML + '</label>',
+            input;
+        if (self.isMultipleSelect) {
+          input = $('<input id="' + id + '" type="checkbox" value="' + element.value + '">');
+        } else {
+          input = $('<input id="' + id + '" name="' + self.rootId + '_radio" type="radio" value="' + element.value + '">');
+        }
+        
+        if (element.selected) {
+          input.attr('checked', true);
+        }
+        
+        self.list.append($('<li></li>').append(input).append(' ').append(label));
+      });
+    },
+    reload: function () {
+      this.createItemsFromSelect();
     },
     _setOption: function (name, value) {
       if (name === 'disabled') {
-        this._trigger(value ? 'disabled' : 'enabled');
+        this._trigger((value ? 'dis' : 'en') + 'abled');
       }
     },
-    _destroy: function () {
+    destroy: function () {
       $.Widget.prototype.destroy.apply(this, arguments);
+      $(document).unbind('click.customRange' + this.rootId);
+      this.root.remove();
+      this.element.show();
     }
   });
 }(jQuery));

@@ -15,6 +15,15 @@
   height: 1.9em;
   cursor: pointer;
 }
+.ui-customSelect-window span {
+  display: block;
+  float: left;
+  margin: 0.45em 0 0 0.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 88%;
+}
 
 .ui-customSelect-arrow {
   float: right;

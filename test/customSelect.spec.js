@@ -1,17 +1,13 @@
-
-    
 describe("customSelect", function () {
   var select,
       customSelect;
   
-  beforeEach(function() {
-    reset();
+  beforeEach(function () {
+    resetSingle();
   });
-        
-  describe("creation", function () {
-    it("should put placeholder text in the window", function () {
-      
-    });
+  
+  afterEach(function () {
+    destroy();
   });
   
   describe("interaction", function () {
@@ -55,8 +51,16 @@ describe("customSelect", function () {
   });
   
   describe("events", function () {
-    it("should fire a change event", function () {
+    it("should fire a change event on the native select and customSelect", function () {
+      var changeCallback = jasmine.createSpy();
       
+      select.bind('change', changeCallback);
+      select.bind('customselectchange', changeCallback);
+      
+      clickWindow();
+      customSelect.find('ul>li:first-child input').click();
+      
+      expect(changeCallback.callCount).toBe(2);
     });
     it("should fire a focus and blur event", function () {
       var blurCallback = jasmine.createSpy(),
@@ -76,6 +80,7 @@ describe("customSelect", function () {
       clickWindow();
       select.bind('customselectblur', blurCallback);
       $('body').click();
+      expect(isOpen()).toBeFalsy();
       expect(blurCallback).toHaveBeenCalled();
     });
   });
@@ -83,37 +88,148 @@ describe("customSelect", function () {
   describe("single select mode", function () {
     describe("creation", function () {
       it("should create a series of radio buttons for a select element", function () {
+        var selectOptions = select.children('option').map(function () {
+              return this.value;
+            }).toArray(),
+            customSelectOptions = customSelect.find('input[type=radio]').map(function () {
+              return this.value;
+            }).toArray();
 
+        expect(customSelectOptions).toEqual(selectOptions);
       });
-      it("should select the first item by default unless otherwise specified", function () {
+      it("should select whatever was initially selected in the native select", function () {
+        expect(select.val()).toEqual(select.customSelect("val"));
+      });
+      it("should put the default item text in the window", function () {
+        expect(placeholderText()).toBe(select.children().eq(1).html());
+      });
+    });
+    describe("interaction", function () {
+      it("should place the selected value in the window", function () {
+        var selectedItem = customSelect.find('li:nth-child(3)>input').click();
+        expect(placeholderText()).toBe(selectedItem.next().html());
+      });
+    });
+    describe("value", function () {
+      it("the value can be retrieved in an array by calling val on the native or custom select", function () {
+        expect(select.val()).toEqual('1p');
+        expect(select.customSelect("val")).toEqual('1p');
         
+        customSelect.find('li>input').eq(2).click();
+        expect(select.val()).toEqual('2p');
+        expect(select.customSelect("val")).toEqual('2p');        
       });
     });
     
-    describe("interaction", function () {
-      it("should place the selected value in the window", function () {
-        
-      });
+    it("should be possible to remove options from the list", function () {
+      select.children().eq(1).remove();
+      select.customSelect("reload");
+      
+      var selectOptions = select.children('option').map(function () {
+            return this.value;
+          }).toArray(),
+          customSelectOptions = customSelect.find('input[type=radio]').map(function () {
+            return this.value;
+          }).toArray();
+
+      expect(customSelectOptions).toEqual(selectOptions);
+    });
+    
+    it("should be possible to add options to the list", function () {
+      select.append('<option name="10p">10+</option');
+      select.customSelect("reload");
+      
+      var selectOptions = select.children('option').map(function () {
+            return this.value;
+          }).toArray(),
+          customSelectOptions = customSelect.find('input[type=radio]').map(function () {
+            return this.value;
+          }).toArray();
+
+      expect(customSelectOptions).toEqual(selectOptions);
     });
   });
 
   describe("multi select mode", function () {
+    beforeEach(function () {
+      destroy();
+      resetMultipleSelected(); // make a multiple select
+    });
+    
     describe("creation", function () {
       it("should create a series of checkboxes for a select=multiple element", function () {
+        var selectOptions = select.children('option').map(function () {
+              return this.value;
+            }).toArray(),
+            customSelectOptions = customSelect.find('input[type=checkbox]').map(function () {
+              return this.value;
+            }).toArray();
 
+        expect(customSelectOptions).toEqual(selectOptions);
+      });
+      it("should select whatever was initially selected in the native select", function () {
+        expect(select.val()).toEqual(select.customSelect("val"));
+      });
+      it("should display the placeholder text if no items were selected at creation", function () {
+        destroy();
+        resetMultipleNoneSelected();
+        expect(placeholderText()).toBe('Please select some items');
       });
     });
     describe("interaction", function () {
       it("should display placeholder text if all items were unchecked", function () {
-      
+        customSelect.find('li>input:checked').click();
+        expect(placeholderText()).toBe('Please select some items');
       });
       it("should place a comma separated list of selected items in the window", function () {
-      
+        expect(placeholderText()).toBe('1+, 3+');
+        customSelect.find('li>input:checked').eq(1).click();
+        expect(placeholderText()).toBe('1+');
       });
+    });
+    describe("value", function () {
+      it("the value can be retrieved in an array by calling val on the native or custom select", function () {
+        var expectedValue = ['1p', '3p'];
+        
+        expect(select.val()).toEqual(expectedValue);
+        expect(select.customSelect("val")).toEqual(expectedValue);
+        
+        customSelect.find('li>input:checked').eq(1).click();
+        expect(select.val()).toEqual(['1p']);
+        expect(select.customSelect("val")).toEqual(['1p']);        
+      });
+    });
+    
+    it("should be possible to remove options from the list", function () {
+      select.children().eq(1).remove();
+      select.customSelect("reload");
+      
+      var selectOptions = select.children('option').map(function () {
+            return this.value;
+          }).toArray(),
+          customSelectOptions = customSelect.find('input[type=checkbox]').map(function () {
+            return this.value;
+          }).toArray();
+
+      expect(customSelectOptions).toEqual(selectOptions);
+    });
+    
+    it("should be possible to add options to the list", function () {
+      select.append('<option name="10p">10+</option');
+      select.customSelect("reload");
+      
+      var selectOptions = select.children('option').map(function () {
+            return this.value;
+          }).toArray(),
+          customSelectOptions = customSelect.find('input[type=checkbox]').map(function () {
+            return this.value;
+          }).toArray();
+
+      expect(customSelectOptions).toEqual(selectOptions);
     });
   });
   
-  describe("custom range", function () {
+  xdescribe("custom range", function () {
     describe("creation", function () {
       it("should create a custom mix/max inputs when the option is specified", function () {
         
@@ -133,34 +249,47 @@ describe("customSelect", function () {
     it("should place the range in the window", function () {
       
     });
-  });
+    describe("value", function () {
+      it("when setting a value, it should set the min/max inputs if the value does not exist", function () {
 
-  describe("value", function () {
-    it("should be possible to inject values in to the set list", function () {
-      
+      });
     });
-    it("should be possible to remove values from the set list", function () {
-      
-    });
-    it("should set an existing checkbox/radio if the set value already exists", function () {
-      
-    });
-    it("should set the min/max inputs if the value does not exist", function () {
-      
-    });
-    it("should manipulate the options of the underlying select", function () {
-      
-    });
+  });
+  
+  it("should hide the native select upon creation", function () {
+    expect($('#select').is(':visible')).toBeFalsy();
+  });
+  
+  it("should show the native select upon destruction", function () {
+    destroy();
+    expect($('#select').is(':visible')).toBeTruthy();
   });
   
   /**
    * Test helpers
    */
    
-  function reset(multiple) {
-    setFixtures('<select ' + (multiple ? 'multiple ' : '') + 'id="select"><option value="">Any</option><option value="1p">1+</option><option value="2p">2+</option><option value="3p">3+</option></select>');
+  function resetSingle() {
+    setFixtures('<select id="select"><option value="">Any</option><option selected value="1p">1+</option><option value="2p">2+</option><option value="3p">3+</option></select>');
     select = $('#select').customSelect();
     customSelect = $('#select_customSelect');
+  }
+  
+  function resetMultipleSelected() {
+    setFixtures('<select multiple id="select"><option value="">Any</option><option selected value="1p">1+</option><option value="2p">2+</option><option selected value="3p">3+</option></select>');
+    select = $('#select').customSelect();
+    customSelect = $('#select_customSelect');
+  }
+
+  function resetMultipleNoneSelected() {
+    setFixtures('<select multiple id="select"><option value="">Any</option><option value="1p">1+</option><option value="2p">2+</option><option value="3p">3+</option></select>');
+    select = $('#select').customSelect();
+    customSelect = $('#select_customSelect');
+  }
+  
+  
+  function destroy() {
+    $('select').customSelect('destroy');
   }
    
   function clickWindow() {
@@ -169,5 +298,9 @@ describe("customSelect", function () {
 
   function isOpen() {
     return customSelect.hasClass('ui-customSelect-open');
+  }
+  
+  function placeholderText() {
+    return customSelect.find('.ui-customSelect-window span').html()
   }
 });

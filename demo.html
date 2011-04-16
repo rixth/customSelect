@@ -14,22 +14,26 @@
       font-size: 12px;
       -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
     }
-    #container {
+    .container {
       width: 200px;
       padding: 20px;
+      margin: 20px;
+      float: left;
     }
   </style>
 </head>
 <body>
   
-  <div id="container">
+  <div class="container">
+    <h2>A standard select</h2>
     <select id="singleSelect">
       <option value="cola">A glass of cola</option>
-      <option value="lemonade">A class of lemonade</option>
+      <option selected value="lemonade">A class of lemonade</option>
       <option value="tea">A cup of tea</option>
     </select>
-    <br>
-    <br>
+  </div>
+  <div class="container">
+    <h2>A multi select</h2>
     <select id="multipleSelect" multiple>
       <option value="cake">A tasty cake</option>
       <option value="burger">A fatty burger</option>
