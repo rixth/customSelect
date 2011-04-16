@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>customSelect by rixth @ GitHub</title>
+  <link rel="stylesheet" href="style.css" />  
+  <link rel="stylesheet" href="http://github.com/rixth/customSelect/raw/master/src/jquery.customSelect.css" />  
+</head>
+
+<body>
+  <a href="http://github.com/rixth/customSelect">
+    <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+  </a>
+
+  <div id="container">
+    <div class="download">
+      <a href="http://github.com/rixth/customSelect/zipball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png">
+      </a>
+      <a href="http://github.com/rixth/customSelect/tarball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png">
+      </a>
+    </div>
+
+    <h1>
+      <a href="http://github.com/rixth/customSelect">customSelect</a>
+    </h1>
+    
+    <p>
+      A simple <a href="http://jqueryui.com">jQuery UI</a> widget to pretty up select elements. It's fully unit tested too, you can <a href="tests.html">run the tests</a> if you like.
+    </p>
+
+    <p>
+      It works by setting the values back in your original select, so you can call the standard jQuery val methods, bind to the change event, etc right on the native element. This is just a presentation layer. It does have its own events too, however.
+    </p>
+    <p>
+      It even works for multi selects.
+    </p>
+    
+    <pre>$('#yourSelect').customSelect();</pre>
+    
+    <h2 style="margin-bottom: 0">Examples</h2>
+    
+    <div class="example-container">
+      <h2>A standard select</h2>
+      <select id="singleSelect">
+        <option value="cola">A glass of cola</option>
+        <option selected value="lemonade">A class of lemonade</option>
+        <option value="tea">A cup of tea</option>
+      </select>
+    </div>
+    <div class="example-container">
+      <h2>A multi select</h2>
+      <select id="multipleSelect" multiple>
+        <option value="cake">A tasty cake</option>
+        <option value="burger">A fatty burger</option>
+        <option value="cola">A large cola</option>
+      </select>
+    </div>
+
+    <pre id="debug_log">Loading...</pre>
+    
+    <h2 style="clear:both;padding-top:10px;">Download</h2>
+    
+    <p>
+      You can download this project in either
+      <a href="http://github.com/rixth/customSelect/zipball/master">zip</a> or
+      <a href="http://github.com/rixth/customSelect/tarball/master">tar</a> formats.
+    </p>
+    <p>
+      You can also clone the project with <a href="http://git-scm.com">Git</a> by running:
+      <pre>$ git clone git://github.com/rixth/customSelect</pre>
+    </p>
+
+    <div class="footer">
+      get the source code on GitHub : <a href="http://github.com/rixth/customSelect">rixth/customSelect</a>
+    </div>
+  </div>
+  
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
+  <script src="http://github.com/rixth/customSelect/raw/master/src/jquery.customSelect.js"></script>
+  
+  <script>
+    $(document).ready(function () {
+      $('#debug_log').html('Debug log...<br>');
+      function debug(what) {
+        $('#debug_log').append(what + "<br>");
+      }
+
+      $('select').customSelect({
+        focus: function () {
+          debug('Got focus');
+        },
+        blur: function () {
+          debug('Lost focus');
+        },
+        change: function () {
+          debug('Widget value changed');
+        }
+      });
+      
+      $('select').change(function () {
+        debug('Native select value changed to: ' + $(this).val());
+      });
+    });
+  </script>
+  
+  <script>
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-22065584-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</body>
+</html>
