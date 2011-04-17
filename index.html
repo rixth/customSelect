@@ -87,6 +87,14 @@
       function debug(what) {
         $('#debug_log').append(what + "<br>");
       }
+      
+      if ($.browser.msie && $.browser.version >= 9) {
+        debug("Sorry, this demo doesn't work directly on");
+        debug("GitHub in IE9/10. This is due to GH serving");
+        debug("JS files as text/plain, rather than");
+        debug("text/javascript  which triggers SEC-7112");
+        return;
+      }
 
       $('select').customSelect({
         focus: function () {

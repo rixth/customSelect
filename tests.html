@@ -7,6 +7,12 @@
 </head>
 <body>
 
+<h3 style="display:none">
+  Sorry, these tests don't work when run from
+  GitHub in IE9/10. This is due to GH serving
+  JS files as text/plain, rather than
+  text/javascript  which triggers SEC-7112
+</h3>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
@@ -18,6 +24,9 @@
 <script type="text/javascript" src="https://github.com/rixth/customSelect/raw/master/test/customSelect.spec.js"></script>
   
 <script type="text/javascript">
+  if ($.browser.msie && $.browser.version >= 9) {
+    $('body>h3').show();
+  }
   jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
   jasmine.getEnv().execute();
 </script>
