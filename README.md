@@ -30,7 +30,7 @@ These are the methods on the widget, call them like so
 
     $('#yourSelect').customSelect(methodName)
 
-* val: fetch the widget's value (it's a string for a single select, or an array for a multi select). You should probably just call .val() directly on your native browser select.
+* getVal: fetch the widget's value (it's a string for a single select, or an array for a multi select). You should probably just call .val() directly on your native browser select.
 * friendlyVal: return the display value (or array of values) that the user actually selects from, rather than the value="" attribute
 * reload: if you want to add or remove items in the widget, manipulate the native browser select then call this method. It'll refresh the items that appear in the dropdown.
 * destroy: remove the pretty widget, unbind events and show the original select

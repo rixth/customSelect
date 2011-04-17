@@ -51,7 +51,7 @@
       
       root.delegate('li>input', 'change', function (event) {
         self._setWindowText();
-        select.val(self.val()).trigger('change');
+        select.val(self.getVal()).trigger('change');
         self._trigger('change', event);
       });
       
@@ -87,11 +87,11 @@
         root.removeClass(disabledClass);
       });
     },
-    val: function () {
-      var result = this.root.find('input:checked').map(function () {
+    getVal: function () {
+      var result = this.root.find('li>input:checked').map(function () {
         return this.value;
       }).toArray();
-      return this.isMultiple ? result : result[0];
+      return result.length ? result[this.isMultiple ? 'slice' : 'pop']() : (this.isMultiple ? [] : null);
     },
     friendlyVal: function () {
       return this.root.find('input:checked+label').map(function () {
@@ -104,10 +104,12 @@
     },
     _createFromSelect: function () {
       var self = this,
-          idCounter = 0;
+          idCounter = 0,
+          list = self.list,
+          insertionPoint = list.prev()[0] || list.parent();
 
       self.isMultiple = self.element.attr('multiple')
-      self.list.empty();
+      list.empty();
           
       this.element.children().each(function () {
         var element = this,
@@ -119,12 +121,14 @@
         } else {
           input = $('<input id="' + id + '" name="' + self.rootId + '_radio" type="radio" value="' + element.value + '">');
         }
+
+        list.append($('<li></li>').append(input).append(' ').append(label));
         
+        // For some reason, this needs to happen after appending, otherwise
+        // IE7 appears to "forget" the checked flag.
         if (element.selected) {
           input.attr('checked', true);
         }
-        
-        self.list.append($('<li></li>').append(input).append(' ').append(label));
       });
     },
     reload: function () {
