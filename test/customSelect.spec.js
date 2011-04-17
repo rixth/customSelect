@@ -58,7 +58,7 @@ describe("customSelect", function () {
       select.bind('customselectchange', changeCallback);
       
       clickWindow();
-      customSelect.find('ul>li:first-child input').click();
+      customSelect.find('ul>li:first-child input').attr('checked', true).change();
       
       expect(changeCallback.callCount).toBe(2);
     });
@@ -98,7 +98,7 @@ describe("customSelect", function () {
         expect(customSelectOptions).toEqual(selectOptions);
       });
       it("should select whatever was initially selected in the native select", function () {
-        expect(select.val()).toEqual(select.customSelect("val"));
+        expect(select.val()).toEqual(select.customSelect("getVal"));
       });
       it("should put the default item text in the window", function () {
         expect(placeholderText()).toBe(select.children().eq(1).html());
@@ -106,18 +106,18 @@ describe("customSelect", function () {
     });
     describe("interaction", function () {
       it("should place the selected value in the window", function () {
-        var selectedItem = customSelect.find('li:nth-child(3)>input').click();
+        var selectedItem = customSelect.find('li:nth-child(3)>input').attr('checked', true).change();
         expect(placeholderText()).toBe(selectedItem.next().html());
       });
     });
     describe("value", function () {
-      it("the value can be retrieved in an array by calling val on the native or custom select", function () {
+      it("the value can be retrieved in an array by calling val/getVal on the native or custom select", function () {
         expect(select.val()).toEqual('1p');
-        expect(select.customSelect("val")).toEqual('1p');
+        expect(select.customSelect("getVal")).toEqual('1p');
         
-        customSelect.find('li>input').eq(2).click();
+        customSelect.find('li>input').eq(2).attr('checked', true).change();
         expect(select.val()).toEqual('2p');
-        expect(select.customSelect("val")).toEqual('2p');        
+        expect(select.customSelect("getVal")).toEqual('2p');        
       });
     });
     
@@ -168,7 +168,7 @@ describe("customSelect", function () {
         expect(customSelectOptions).toEqual(selectOptions);
       });
       it("should select whatever was initially selected in the native select", function () {
-        expect(select.val()).toEqual(select.customSelect("val"));
+        expect(select.val()).toEqual(select.customSelect("getVal"));
       });
       it("should display the placeholder text if no items were selected at creation", function () {
         destroy();
@@ -178,25 +178,25 @@ describe("customSelect", function () {
     });
     describe("interaction", function () {
       it("should display placeholder text if all items were unchecked", function () {
-        customSelect.find('li>input:checked').click();
+        customSelect.find('li>input:checked').attr('checked', false).change();
         expect(placeholderText()).toBe('Please select some items');
       });
       it("should place a comma separated list of selected items in the window", function () {
         expect(placeholderText()).toBe('1+, 3+');
-        customSelect.find('li>input:checked').eq(1).click();
+        customSelect.find('li>input:checked').eq(1).attr('checked', false).change();
         expect(placeholderText()).toBe('1+');
       });
     });
     describe("value", function () {
-      it("the value can be retrieved in an array by calling val on the native or custom select", function () {
+      it("the value can be retrieved in an array by calling val/getVal on the native or custom select", function () {
         var expectedValue = ['1p', '3p'];
         
         expect(select.val()).toEqual(expectedValue);
-        expect(select.customSelect("val")).toEqual(expectedValue);
+        expect(select.customSelect("getVal")).toEqual(expectedValue);
         
-        customSelect.find('li>input:checked').eq(1).click();
+        customSelect.find('li>input:checked').eq(1).attr('checked', false).change();
         expect(select.val()).toEqual(['1p']);
-        expect(select.customSelect("val")).toEqual(['1p']);        
+        expect(select.customSelect("getVal")).toEqual(['1p']);        
       });
     });
     
