@@ -24,12 +24,12 @@ Sample CSS has been provided for you in src/jquery.customSelect.css. There's lot
 
 * windowFormatter (*default: noop*) called with the display value before the 'window'  is set, allowing you to modify or format it.
 
-## These options only apply to standard single selects
+### These options only apply to standard single selects
 
 * customRange (*default: false*) show min-max inputs to allow a user to enter a custom numeric range
 * customRanges (*default: empty*) an object with two keys, min and max, which are the starting values for the custom box.
 
-# These options only relate to multiple selects
+### These options only relate to multiple selects
 
 * placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
 * defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
