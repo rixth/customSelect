@@ -1,0 +1,74 @@
+/*! customSelect: a jQuery UI widget to select items and ranges
+    http://github.com/rixth/customSelect
+*/
+
+.ui-customSelect {
+  border: 1px solid #ccc;
+  position: relative;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+  background: white;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+}
+
+.ui-customSelect-window {
+  height: 1.9em;
+  cursor: pointer;
+}
+.ui-customSelect-window span {
+  display: block;
+  float: left;
+  margin: 0.45em 0 0 0.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 88%;
+}
+
+.ui-customSelect-arrow {
+  float: right;
+  color: #555;
+  width: 10px;
+  margin: .35em .5em 0 0;
+}
+.ui-customSelect-upArrow {
+  display: none;
+}
+.ui-customSelect-open .ui-customSelect-downArrow {
+  display: none;
+}
+.ui-customSelect-open .ui-customSelect-upArrow {
+  display: block;
+}
+
+.ui-customSelect-dropdown {
+  background: white;
+  position: absolute;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin: 0 -1px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+  display: none;
+  z-index: 1000;
+}
+
+.ui-customSelect-open .ui-customSelect-dropdown {
+  display: block;
+}
+
+.ui-customSelect-dropdown input {
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 3px 0 0;
+}
+
+.ui-customSelect-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ui-customSelect-dropdown ul li {
+  line-height: 1.1em;
+  padding: 0.3em;
+}
+

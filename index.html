@@ -4,7 +4,7 @@
   <meta charset='utf-8'>
   <title>customSelect by rixth @ GitHub</title>
   <link rel="stylesheet" href="style.css" />  
-  <link rel="stylesheet" href="http://github.com/rixth/customSelect/raw/master/src/jquery.customSelect.css" />  
+  <link rel="stylesheet" href="src/jquery.customSelect.css" />  
 </head>
 
 <body>
@@ -27,7 +27,7 @@
     </h1>
     
     <p>
-      A simple <a href="http://jqueryui.com">jQuery UI</a> widget to pretty up select elements. It's fully unit tested too, you can <a href="tests.html">run the tests</a> if you like.
+      A simple <a href="http://jqueryui.com">jQuery UI</a> widget to pretty up select elements. It's fully unit tested too, you can <a href="test/">run the tests</a> if you like.
     </p>
 
     <p>
@@ -79,7 +79,7 @@
   
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
-  <script src="http://github.com/rixth/customSelect/raw/master/src/jquery.customSelect.js"></script>
+  <script src="src/jquery.customSelect.js"></script>
   
   <script>
     $(document).ready(function () {
@@ -88,14 +88,6 @@
         $('#debug_log').append(what + "<br>");
       }
       
-      if ($.browser.msie && $.browser.version >= 9) {
-        debug("Sorry, this demo doesn't work directly on");
-        debug("GitHub in IE9/10. This is due to GH serving");
-        debug("JS files as text/plain, rather than");
-        debug("text/javascript  which triggers SEC-7112");
-        return;
-      }
-
       $('select').customSelect({
         focus: function () {
           debug('Got focus');
