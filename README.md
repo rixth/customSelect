@@ -27,13 +27,13 @@ Sample CSS has been provided for you in src/jquery.customSelect.css. There's lot
 ## These options only apply to standard single selects
 
 * customRange (*default: false*) show min-max inputs to allow a user to enter a custom numeric range
-* customValues (*default: empty*) an object with two keys, min and max, which are the starting values for the custom box.
+* customRanges (*default: empty*) an object with two keys, min and max, which are the starting values for the custom box.
 
 # These options only relate to multiple selects
 
 * placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
 * defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
-* customValueHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'.
+* customRangeHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'.
 
 ## Methods
 
@@ -58,4 +58,4 @@ As noted above, you can also bind to the standard events on the select.
 * blur: fired when the dropdown loses focus (and is closed)
 * disabled: fired when the widget is disabled
 * enabled: fired when the widget is enabled
-* customrangechange: fired when the user attempts to set a custom range. This range is passed to your hander. If you return false, or a string, the change will be denied (and the string will be used as an error message).
+* rangechange: fired when the user attempts to set a custom range. This range is passed to your handler in the 2nd argument under the min/max keys. If you return false, the submission won't be accepted. You can use *setCustomRangeError* to set an error for the user.

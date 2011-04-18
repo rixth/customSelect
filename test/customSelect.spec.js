@@ -101,13 +101,13 @@ describe("customSelect", function () {
         expect(select.val()).toEqual(select.customSelect("getVal"));
       });
       it("should put the default item text in the window", function () {
-        expect(placeholderText()).toBe(select.children().eq(1).html());
+        expect(windowText()).toBe(select.children().eq(1).html());
       });
     });
     describe("interaction", function () {
       it("should place the selected value in the window", function () {
         var selectedItem = customSelect.find('li:nth-child(3)>input').attr('checked', true).change();
-        expect(placeholderText()).toBe(selectedItem.next().html());
+        expect(windowText()).toBe(selectedItem.next().html());
       });
     });
     describe("value", function () {
@@ -173,21 +173,21 @@ describe("customSelect", function () {
       it("should display the placeholder text if no items were selected at creation", function () {
         destroy();
         resetMultipleNoneSelected();
-        expect(placeholderText()).toBe('Please select some items');
+        expect(windowText()).toBe('Please select some items');
       });
       it("should display the default item if no items were selected at creation", function () {
         destroy();
         resetMultipleNoneSelected({
           defaultValue: '2p'
         });
-        expect(placeholderText()).toBe('2+');
+        expect(windowText()).toBe('2+');
         expect(select.val()).toEqual(['2p']);
       });
     });
     describe("interaction", function () {
       it("should display placeholder text if all items were unchecked", function () {
         customSelect.find('li>input:checked').attr('checked', false).change();
-        expect(placeholderText()).toBe('Please select some items');
+        expect(windowText()).toBe('Please select some items');
       });
       it("should default to a certain value if all items were unchecked", function () {
         destroy();
@@ -200,9 +200,9 @@ describe("customSelect", function () {
         expect(select.customSelect("getVal")).toEqual(['2p']);        
       });
       it("should place a comma separated list of selected items in the window", function () {
-        expect(placeholderText()).toBe('1+, 3+');
+        expect(windowText()).toBe('1+, 3+');
         customSelect.find('li>input:checked').eq(1).attr('checked', false).change();
-        expect(placeholderText()).toBe('1+');
+        expect(windowText()).toBe('1+');
       });
     });
     describe("value", function () {
@@ -266,45 +266,163 @@ describe("customSelect", function () {
         expect(customSelect).not.toContain('.ui-customSelect-rangeContainer');
       });
       it("should load the starting custom values if they are provided and display them in the window", function () {
+        destroy();
+        resetSingle({
+          customRange: true,
+          customRanges: {
+            min: 1,
+            max: 10
+          }
+        });
         
+        expect(windowText()).toBe('1 to 10');
+        expect(select.val()).toBe('1-10');
       });
     });
     describe("events", function () {
       it("should fire data validation callbacks", function () {
-
+        var callback = jasmine.createSpy();
+                
+        select.bind('customselectrangechange', callback);
+        
+        fillValues(1, 10);
+        rangeSubmit();
+        
+        expect(callback).toHaveBeenCalledWith(jasmine.any(Object), { min: '1', max: '10', widget: jasmine.any(Object)});
+      });
+      it("should fire change events on the native select", function () {
+        var callback = jasmine.createSpy();
+                
+        select.bind('change', callback);
+        
+        fillValues(1, 10);
+        rangeSubmit();
+        
+        expect(callback).toHaveBeenCalled()
       });
     });
     describe("interaction", function () {
-      it("should submit the custom values upon losing focus or pressing enter", function () {
-        
+      it("should submit the custom values upon pressing enter", function () {      
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(select.val()).toBe('1-10');
       });
       it("should pass the selected range through helper, returning the value and display value", function () {
-
+        destroy();
+        resetSingle({
+          customRange: true,
+          customRangeHelper: function(){
+            return ['dataValue', 'displayValue'];
+          }
+        });
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(select.val()).toBe('dataValue');
+        expect(windowText()).toBe('displayValue');
       });
       it("should place the range in the window", function () {
-
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(windowText()).toBe('1 to 10');
       });
       it("should uncheck all the radio boxes", function () {
+        var selectedItem = customSelect.find('li:nth-child(3)>input').attr('checked', true).change();
         
+        expect(selectedItem).toBeChecked();
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(selectedItem).not.toBeChecked();
+        expect(customSelect.find('input:checked')).not.toExist();
       });
       it("should not allow min to be bigger than max", function () {
-
+        expect(select.val()).toBe('1p');
+        fillValues(10, 1);
+        rangeSubmit();
+        expect(select.val()).toBe('1p');
+        expect(customSelect.find('.ui-customSelect-error')).toBeVisible();
       });
-      it("should show error messages returned by data validation handlers", function () {
+      it("should hide error messages after a successful range", function () {
+        expect(select.val()).toBe('1p');
+        fillValues(10, 1);
+        rangeSubmit();
+        expect(select.val()).toBe('1p');
+        expect(customSelect.find('.ui-customSelect-error')).toBeVisible();
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(select.val()).toBe('1-10');
+        expect(customSelect.find('.ui-customSelect-error')).not.toBeVisible();        
+      });
+      it("should show error messages from the data validation handlers", function () {                
+        select.bind('customselectrangechange', function (event, data) {
+          data.widget.setCustomRangeError("LOLWUT");
+          return false;
+        });
         
+        fillValues(1, 10);
+        rangeSubmit();
+        
+        expect(customSelect.find('.ui-customSelect-error')).toBeVisible();
+      });
+      it("should have sane data and display values for various use cases", function () {
+        // min and max set
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(select.val()).toBe('1-10');
+        expect(windowText()).toBe('1 to 10');
+        
+        // min set, max not
+        fillValues(100, '');
+        rangeSubmit();
+        expect(select.val()).toBe('100p');
+        expect(windowText()).toBe('100+');
+        
+        // max set, min not,
+        fillValues('', 100);
+        rangeSubmit();
+        expect(select.val()).toBe('0-100');
+        expect(windowText()).toBe('0 to 100');
+        
+        // min == max
+        fillValues(100, 100);
+        rangeSubmit();
+        expect(select.val()).toBe('100-100');
+        expect(windowText()).toBe('100');
       });
     });
     describe("value", function () {
-      it("should create an option in the native select with the custom data attribute", function () {
+      it("should create an option in the native select with the custom data attribute and select it", function () {
+        fillValues(1, 10);
+        rangeSubmit();
         
+        var newOption = select.find('option[data-custom]:last-child');
+        expect(newOption).toExist();
+        expect(newOption).toHaveValue("1-10");
       });
       it("calling val() on the native select should retrieve our custom value", function () {
-        
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(select.val()).toBe("1-10");
       });
-      it("calling getValue on the custom select should retrieve our custom value", function () {
-        
+      it("calling getVal on the custom select should retrieve our custom value", function () {
+        fillValues(1, 10);
+        rangeSubmit();
+        expect(select.customSelect("getVal")).toBe("1-10");        
       });
     });
+    
+    /**
+     * Custom range test helpers
+     */
+    function fillValues(min, max) {
+      $('.ui-customSelect-min').val(min);
+      $('.ui-customSelect-max').val(max);
+    }
+    
+    function rangeSubmit() {
+      var event = $.Event('keydown');
+      event.which = 13;
+      $('.ui-customSelect-min').trigger(event);
+    };
   });
   
   it("should hide the native select upon creation", function () {
@@ -351,7 +469,7 @@ describe("customSelect", function () {
     return customSelect.hasClass('ui-customSelect-open');
   }
   
-  function placeholderText() {
+  function windowText() {
     return customSelect.find('.ui-customSelect-window span').html()
   }
 });

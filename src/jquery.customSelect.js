@@ -15,13 +15,13 @@
       placeholder: 'Please select some items',
       defaultValue: null,
       customRange: false,
-      customValues: null,
+      customRanges: null,
       windowFormatter: function (value) {
         return value;
       },
-      customValueHelper: function (min, max) {
+      customRangeHelper: function (min, max) {
         var value, display;
-        
+
         if (min && max) {
           value = min + '-' + max;
           display = min == max ? min : (min + ' to ' + max);
@@ -48,6 +48,7 @@
         throw new TypeError("jquery.customSelect expects a <select> element.");
       }
       
+      self.customValue = null;
       self.rootId = select.attr('id') + '_customSelect'
       
       // Create the base HTML, the window and dropdown
@@ -82,6 +83,7 @@
         self._trigger('change', event);
         $('.ui-customSelect-rangeContainer input').val('');
         $('.ui-customSelect-error').hide();
+        self.customValue = null;
       });
             
       select.bind(eventPrefix + 'focus', function () {
@@ -124,6 +126,10 @@
       }
     },
     getVal: function () {
+      if (this.customValue !== null) {
+        return this.customValue;
+      }
+      
       var result = this.root.find('li>input:checked').map(function () {
         return this.value;
       }).toArray();
@@ -196,7 +202,7 @@
     customRangeHtml = [
       '<div class="ui-customSelect-rangeContainer">',
       '  <input class="ui-customSelect-min" placeholder="min" /> to &nbsp;<input class="ui-customSelect-max" placeholder="max" />',
-      '  <div class="ui-customSelect-error"></div>',
+      '  <div style="display: none" class="ui-customSelect-error"></div>',
       '</div>'
     ];
     
@@ -208,25 +214,29 @@
     function customRangeHandler(event) {
       var min = minInput.val(),
           max = maxInput.val(),
-          values = {
+          rangeChangeData = {
             min: min,
             max: max,
+            widget: self
           },
           formattingResult, option;
       
       if (isNaN(min) || isNaN(max)) {
         self.setCustomRangeError("Please enter only numbers.");
       } else {
-        if (max < min) {
+        if (max & min > max) {
           self.setCustomRangeError("Min cannot be bigger than max.");
         } else {
-          if (self._trigger('customrangechange', event, values)) {
+          if (self._trigger('rangechange', event, rangeChangeData)) {
             $('.ui-customSelect-error').hide();
 
-            formattingResult = options.customValueHelper(min, max);
+            formattingResult = options.customRangeHelper(min, max);
             self._setWindowText(formattingResult[1]);
+            self.customValue = formattingResult[0];
+            
             option = $('<option data-custom="true" value="' + formattingResult[0] + '">' + formattingResult[1] + '</option>');
-            self.element.find('option[data-custom]').remove().append(option).trigger('change', event);
+            self.element.find('option[data-custom]').remove();
+            self.element.append(option.attr('selected', true)).trigger('change', event);
             self._trigger('change', event);
             root.find('input:checked').attr('checked', false);
             self._trigger('blur');
@@ -236,12 +246,12 @@
     }
     
     self.setCustomRangeError = function (error) {
-      errorDiv.html(error).show();
+      errorDiv.show().html(error);
     };
     
-    if (options.customValues) {
-      minInput.val(options.customValues.min);
-      maxInput.val(options.customValues.min);
+    if (options.customRanges) {
+      minInput.val(options.customRanges.min);
+      maxInput.val(options.customRanges.max);
       customRangeHandler();
     }
 
