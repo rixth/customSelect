@@ -224,7 +224,7 @@
       if (isNaN(min) || isNaN(max)) {
         self.setCustomRangeError("Please enter only numbers.");
       } else {
-        if (max & min > max) {
+        if (min && max && min > max) {
           self.setCustomRangeError("Min cannot be bigger than max.");
         } else {
           if (self._trigger('rangechange', event, rangeChangeData)) {
