@@ -109,6 +109,17 @@ describe("customSelect", function () {
         var selectedItem = customSelect.find('li:nth-child(3)>input').attr('checked', true).change();
         expect(windowText()).toBe(selectedItem.next().html());
       });
+      it("should run the window value through the formatter", function () {
+        destroy();
+        resetSingle({
+          windowFormatter: function (value) {
+            return 'LOLBUTTS-' + value;
+          }
+        });
+        
+        expect(select.val()).toBe('1p');
+        expect(windowText()).toBe('LOLBUTTS-1+');
+      });
     });
     describe("value", function () {
       it("the value can be retrieved in an array by calling val/getVal on the native or custom select", function () {
