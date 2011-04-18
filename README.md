@@ -22,7 +22,9 @@ Sample CSS has been provided for you in src/jquery.customSelect.css. There's lot
 
 ## Options
 
-* placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
+* multimode (this is a nested hash, which only relates to multiple selects)
+  * placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
+  * defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
 
 ## Methods
 

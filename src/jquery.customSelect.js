@@ -11,10 +11,14 @@
       
   $.widget("ui.customSelect", {
     options: {
-      placeholder: 'Please select some items'
+      multimode: {
+        placeholder: 'Please select some items',
+        defaultValue: null
+      }
     },
     _create: function () {
       var self = this,
+          defaultValue = self.options.multimode.defaultValue,
           select = this.element,
           root, rootHtml = [],
           isOpen = false;
@@ -79,6 +83,16 @@
       }).bind(eventPrefix + 'enabled', function () {
         root.removeClass(disabledClass);
       });
+
+      if (self.isMultiple && defaultValue) {
+        function setDefaultItem() {
+          if (!self.getVal().length) {
+            self.list.find('input[value=' + defaultValue + ']').attr('checked', true).change();
+          }
+        };
+        select.bind(eventPrefix + 'change', setDefaultItem);
+        setDefaultItem();
+      }
     },
     getVal: function () {
       var result = this.root.find('li>input:checked').map(function () {
@@ -93,7 +107,7 @@
     },
     _setWindowText: function () {
       var value = this.friendlyVal();
-      this.window.html(value.length ? value.join(', ') : (this.options.placeholder || ''));
+      this.window.html(value.length ? value.join(', ') : this.options.multimode.placeholder);
     },
     _createFromSelect: function () {
       var self = this,

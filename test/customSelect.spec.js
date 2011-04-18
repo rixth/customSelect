@@ -175,11 +175,28 @@ describe("customSelect", function () {
         resetMultipleNoneSelected();
         expect(placeholderText()).toBe('Please select some items');
       });
+      it("should display the default item if no items were selected at creation", function () {
+        destroy();
+        resetMultipleNoneSelected({
+          multimode: { defaultValue: '2p' }
+        });
+        expect(placeholderText()).toBe('2+');
+      });
     });
     describe("interaction", function () {
       it("should display placeholder text if all items were unchecked", function () {
         customSelect.find('li>input:checked').attr('checked', false).change();
         expect(placeholderText()).toBe('Please select some items');
+      });
+      it("should default to a certain value if all items were unchecked", function () {
+        destroy();
+        resetMultipleSelected({
+          multimode: { defaultValue: '2p' }
+        });
+        
+        customSelect.find('li>input:checked').attr('checked', false).change();
+        expect(select.val()).toEqual(['2p']);
+        expect(select.customSelect("getVal")).toEqual(['2p']);        
       });
       it("should place a comma separated list of selected items in the window", function () {
         expect(placeholderText()).toBe('1+, 3+');
@@ -269,21 +286,21 @@ describe("customSelect", function () {
    * Test helpers
    */
    
-  function resetSingle() {
+  function resetSingle(options) {
     setFixtures('<select id="select"><option value="">Any</option><option selected value="1p">1+</option><option value="2p">2+</option><option value="3p">3+</option></select>');
-    select = $('#select').customSelect();
+    select = $('#select').customSelect(options || {});
     customSelect = $('#select_customSelect');
   }
   
-  function resetMultipleSelected() {
+  function resetMultipleSelected(options) {
     setFixtures('<select multiple id="select"><option value="">Any</option><option selected value="1p">1+</option><option value="2p">2+</option><option selected value="3p">3+</option></select>');
-    select = $('#select').customSelect();
+    select = $('#select').customSelect(options || {});
     customSelect = $('#select_customSelect');
   }
 
-  function resetMultipleNoneSelected() {
+  function resetMultipleNoneSelected(options) {
     setFixtures('<select multiple id="select"><option value="">Any</option><option value="1p">1+</option><option value="2p">2+</option><option value="3p">3+</option></select>');
-    select = $('#select').customSelect();
+    select = $('#select').customSelect(options || {});
     customSelect = $('#select_customSelect');
   }
   
