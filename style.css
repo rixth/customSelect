@@ -11,7 +11,7 @@ body {
 
 #container {
   margin: 0 auto;
-  width: 630px;
+  width: 730px;
 }
 
 h1 {
@@ -34,7 +34,7 @@ a {
 }
 
 .example-container {
-  width: 200px;
+  width: 190px;
   margin: 0 20px 20px 20px;
   float: left;
   font-size: 12px;

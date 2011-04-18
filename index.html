@@ -42,6 +42,14 @@
     <h2 style="margin-bottom: 0">Examples</h2>
     
     <div class="example-container">
+      <h2>A custom-range select</h2>
+      <select id="rangeSelect">
+        <option value="1p">1+ bedrooms</option>
+        <option value="2p">2+ bedrooms</option>
+        <option value="3p">3+ bedrooms</option>
+      </select>
+    </div>
+    <div class="example-container">
       <h2>A standard select</h2>
       <select id="singleSelect">
         <option value="cola">A glass of cola</option>
@@ -88,7 +96,7 @@
         $('#debug_log').append(what + "<br>");
       }
       
-      $('select').customSelect({
+      $('#singleSelect, #multipleSelect').customSelect({
         focus: function () {
           debug('Got focus');
         },
@@ -97,6 +105,16 @@
         },
         change: function () {
           debug('Widget value changed');
+        }
+      });
+      
+      $('#rangeSelect').customSelect({
+        customRange: true,
+        windowFormatter: function (value) {
+          if (value.indexOf('bedrooms') === -1) {
+            value += ' bedrooms';
+          }
+          return value.replace(/bedrooms/, '<strong>bedrooms</strong>');
         }
       });
       
