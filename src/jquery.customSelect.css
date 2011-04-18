@@ -65,10 +65,30 @@
 .ui-customSelect-dropdown ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 5px 0;
 }
 .ui-customSelect-dropdown ul li {
   line-height: 1.1em;
   padding: 0.3em;
 }
 
+
+.ui-customSelect-rangeContainer {
+  background: #ECE9E9;
+  padding: 5px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+.ui-customSelect-rangeContainer input {
+  border: 1px solid #ccc;
+  display: inline-block;
+  width: 40%;
+  vertical-align: middle;
+  text-align: left;
+}
+.ui-customSelect-error {
+  display: none;
+  color: #900;
+  text-align: left;
+  margin-top: 5px;
+}

@@ -7,20 +7,41 @@
 (function ($) {
   var openClass = 'ui-customSelect-open',
       disabledClass = 'ui-customRange-disabled',
-      eventPrefix = 'customselect';
+      eventPrefix = 'customselect',
+      createCustomRange;
       
   $.widget("ui.customSelect", {
     options: {
-      multimode: {
-        placeholder: 'Please select some items',
-        defaultValue: null
+      placeholder: 'Please select some items',
+      defaultValue: null,
+      customRange: false,
+      customValues: null,
+      windowFormatter: function (value) {
+        return value;
+      },
+      customValueHelper: function (min, max) {
+        var value, display;
+        
+        if (min && max) {
+          value = min + '-' + max;
+          display = min == max ? min : (min + ' to ' + max);
+        } else if (min && !max) {
+          value = min + 'p';
+          display = min + '+';
+        } else if (!min && max) {
+          value =  '0-' + max;
+          display = '0 to ' + max;
+        }
+        
+        return [value, display];
       }
     },
     _create: function () {
       var self = this,
-          defaultValue = self.options.multimode.defaultValue,
+          options = self.options,
+          defaultValue = options.defaultValue,
           select = this.element,
-          root, rootHtml = [],
+          root, rootHtml,
           isOpen = false;
           
       if (!select.is('select')) {
@@ -30,13 +51,15 @@
       self.rootId = select.attr('id') + '_customSelect'
       
       // Create the base HTML, the window and dropdown
-      rootHtml.push('<div class="ui-customSelect">');
-      rootHtml.push('  <div class="ui-customSelect-window"><span></span>');
-      rootHtml.push('    <div class="ui-customSelect-arrow ui-customSelect-downArrow">&#x25BC;</div>');
-      rootHtml.push('    <div class="ui-customSelect-arrow ui-customSelect-upArrow">&#x25B2;</div>');
-      rootHtml.push('  </div>');
-      rootHtml.push('  <div class="ui-customSelect-dropdown"><ul></ul></div>');
-      rootHtml.push('</div>');
+      rootHtml = [
+        '<div class="ui-customSelect">',
+        '  <div class="ui-customSelect-window"><span></span>',
+        '    <div class="ui-customSelect-arrow ui-customSelect-downArrow">&#x25BC;</div>',
+        '    <div class="ui-customSelect-arrow ui-customSelect-upArrow">&#x25B2;</div>',
+        '  </div>',
+        '  <div class="ui-customSelect-dropdown"><ul></ul></div>',
+        '</div>'
+      ];
       
       // Place ourselves 
       this.root = root = $(rootHtml.join('')).attr('id', self.rootId);
@@ -57,6 +80,8 @@
         self._setWindowText();
         select.val(self.getVal()).trigger('change');
         self._trigger('change', event);
+        $('.ui-customSelect-rangeContainer input').val('');
+        $('.ui-customSelect-error').hide();
       });
             
       select.bind(eventPrefix + 'focus', function () {
@@ -93,6 +118,10 @@
         select.bind(eventPrefix + 'change', setDefaultItem);
         setDefaultItem();
       }
+      
+      if (!self.isMultiple && options.customRange && createCustomRange) {
+        createCustomRange.call(self, root, this.list, options);
+      }
     },
     getVal: function () {
       var result = this.root.find('li>input:checked').map(function () {
@@ -105,9 +134,13 @@
         return this.innerHTML;
       }).toArray();
     },
-    _setWindowText: function () {
-      var value = this.friendlyVal();
-      this.window.html(value.length ? value.join(', ') : this.options.multimode.placeholder);
+    _setWindowText: function (windowValue) {
+      var value;
+      if (!windowValue) {
+        value = this.friendlyVal();
+        windowValue = value.length ? value.join(', ') : this.options.placeholder;
+      }
+      this.window.html(this.options.windowFormatter(windowValue));
     },
     _createFromSelect: function () {
       var self = this,
@@ -139,6 +172,8 @@
       });
     },
     reload: function () {
+      // Remove all custom options
+      this.element.find('option[data-custom]').remove();
       this._createFromSelect();
     },
     _setOption: function (name, value) {
@@ -153,4 +188,67 @@
       this.element.show();
     }
   });
+  
+  createCustomRange = function (root, list, options) {
+    var customRangeHtml, errorDiv, min, max,
+        self = this;
+    
+    customRangeHtml = [
+      '<div class="ui-customSelect-rangeContainer">',
+      '  <input class="ui-customSelect-min" placeholder="min" /> to &nbsp;<input class="ui-customSelect-max" placeholder="max" />',
+      '  <div class="ui-customSelect-error"></div>',
+      '</div>'
+    ];
+    
+    list.after($(customRangeHtml.join('')));
+    minInput = root.find('.ui-customSelect-min');
+    maxInput = root.find('.ui-customSelect-max');
+    errorDiv = root.find('.ui-customSelect-error');
+    
+    function customRangeHandler(event) {
+      var min = minInput.val(),
+          max = maxInput.val(),
+          values = {
+            min: min,
+            max: max,
+          },
+          formattingResult, option;
+      
+      if (isNaN(min) || isNaN(max)) {
+        self.setCustomRangeError("Please enter only numbers.");
+      } else {
+        if (max < min) {
+          self.setCustomRangeError("Min cannot be bigger than max.");
+        } else {
+          if (self._trigger('customrangechange', event, values)) {
+            $('.ui-customSelect-error').hide();
+
+            formattingResult = options.customValueHelper(min, max);
+            self._setWindowText(formattingResult[1]);
+            option = $('<option data-custom="true" value="' + formattingResult[0] + '">' + formattingResult[1] + '</option>');
+            self.element.find('option[data-custom]').remove().append(option).trigger('change', event);
+            self._trigger('change', event);
+            root.find('input:checked').attr('checked', false);
+            self._trigger('blur');
+          }
+        }
+      }
+    }
+    
+    self.setCustomRangeError = function (error) {
+      errorDiv.html(error).show();
+    };
+    
+    if (options.customValues) {
+      minInput.val(options.customValues.min);
+      maxInput.val(options.customValues.min);
+      customRangeHandler();
+    }
+
+    minInput.add(maxInput).bind('keydown', function (event) {
+      if (event.which === 13) {
+        customRangeHandler(event);
+      }
+    });
+  }
 }(jQuery));

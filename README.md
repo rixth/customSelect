@@ -22,9 +22,18 @@ Sample CSS has been provided for you in src/jquery.customSelect.css. There's lot
 
 ## Options
 
-* multimode (this is a nested hash, which only relates to multiple selects)
-  * placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
-  * defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
+* windowFormatter (*default: noop*) called with the display value before the 'window'  is set, allowing you to modify or format it.
+
+## These options only apply to standard single selects
+
+* customRange (*default: false*) show min-max inputs to allow a user to enter a custom numeric range
+* customValues (*default: empty*) an object with two keys, min and max, which are the starting values for the custom box.
+
+# These options only relate to multiple selects
+
+* placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
+* defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
+* customValueHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'.
 
 ## Methods
 
@@ -35,6 +44,7 @@ These are the methods on the widget, call them like so
 * getVal: fetch the widget's value (it's a string for a single select, or an array for a multi select). You should probably just call .val() directly on your native browser select.
 * friendlyVal: return the display value (or array of values) that the user actually selects from, rather than the value="" attribute
 * reload: if you want to add or remove items in the widget, manipulate the native browser select then call this method. It'll refresh the items that appear in the dropdown.
+* setCustomRangeError(string): lets you set a validation error in your customrangechange event handlers
 * destroy: remove the pretty widget, unbind events and show the original select
 * disable: disable the widget, close the popup if it is open, do not allow it to be opened
 * enable: allow interaction with the widget after disabling it
@@ -48,3 +58,4 @@ As noted above, you can also bind to the standard events on the select.
 * blur: fired when the dropdown loses focus (and is closed)
 * disabled: fired when the widget is disabled
 * enabled: fired when the widget is enabled
+* customrangechange: fired when the user attempts to set a custom range. This range is passed to your hander. If you return false, or a string, the change will be denied (and the string will be used as an error message).

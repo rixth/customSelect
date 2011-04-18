@@ -178,9 +178,10 @@ describe("customSelect", function () {
       it("should display the default item if no items were selected at creation", function () {
         destroy();
         resetMultipleNoneSelected({
-          multimode: { defaultValue: '2p' }
+          defaultValue: '2p'
         });
         expect(placeholderText()).toBe('2+');
+        expect(select.val()).toEqual(['2p']);
       });
     });
     describe("interaction", function () {
@@ -191,7 +192,7 @@ describe("customSelect", function () {
       it("should default to a certain value if all items were unchecked", function () {
         destroy();
         resetMultipleSelected({
-          multimode: { defaultValue: '2p' }
+          defaultValue: '2p'
         });
         
         customSelect.find('li>input:checked').attr('checked', false).change();
@@ -246,9 +247,25 @@ describe("customSelect", function () {
     });
   });
   
-  xdescribe("custom range", function () {
+  describe("custom range", function () {
+    beforeEach(function () {
+      destroy();
+      resetSingle({
+        customRange: true
+      });
+    });
     describe("creation", function () {
       it("should create a custom mix/max inputs when the option is specified", function () {
+        expect(customSelect).toContain('.ui-customSelect-rangeContainer');
+      });
+      it("should not create mix/max inputs for a multiple select", function () {
+        destroy();
+        resetMultipleSelected({
+          customRange: true
+        });
+        expect(customSelect).not.toContain('.ui-customSelect-rangeContainer');
+      });
+      it("should load the starting custom values if they are provided and display them in the window", function () {
         
       });
     });
@@ -256,19 +273,36 @@ describe("customSelect", function () {
       it("should fire data validation callbacks", function () {
 
       });
-    })
-    it("should not allow min to be bigger than max", function () {
-      
     });
-    it("should pass the selected range through a formatting helper", function () {
-      
-    });
-    it("should place the range in the window", function () {
-      
+    describe("interaction", function () {
+      it("should submit the custom values upon losing focus or pressing enter", function () {
+        
+      });
+      it("should pass the selected range through helper, returning the value and display value", function () {
+
+      });
+      it("should place the range in the window", function () {
+
+      });
+      it("should uncheck all the radio boxes", function () {
+        
+      });
+      it("should not allow min to be bigger than max", function () {
+
+      });
+      it("should show error messages returned by data validation handlers", function () {
+        
+      });
     });
     describe("value", function () {
-      it("when setting a value, it should set the min/max inputs if the value does not exist", function () {
-
+      it("should create an option in the native select with the custom data attribute", function () {
+        
+      });
+      it("calling val() on the native select should retrieve our custom value", function () {
+        
+      });
+      it("calling getValue on the custom select should retrieve our custom value", function () {
+        
       });
     });
   });
