@@ -273,11 +273,6 @@
       }
     }
     
-    // this.bind('customselectsubmitcustomrange', function () {
-    //   alert('hi');
-    //   customRangeHandler();
-    // });
-    
     self.setCustomRangeError = function (error) {
       errorDiv.show().html(error);
     };
