@@ -34,6 +34,13 @@
         }
         
         return [value, display];
+      },
+      reverseRangeHelper: function (string) {
+        if (string.match(/^\d+-\d+$/)) {
+          return string.split('-');
+        } else if (string.match(/^\d+p$/)) {
+          return [string.match(/^(\d+)p$/)[1], ''];
+        }
       }
     },
     _create: function () {
@@ -125,6 +132,21 @@
         createCustomRange.call(self, root, this.list, options);
       }
     },
+    setVal: function (value) {
+      var existingOption = this.element.find('option[value=' + value + ']'),
+          customRange;
+      
+      if (existingOption.length) {
+        existingOption.attr('selected', true);
+        this.reload();
+        this._setWindowText();
+      } else {
+        customRange = this.options.reverseRangeHelper(value);
+        this.root.find('.ui-customSelect-min').val(customRange[0]);
+        this.root.find('.ui-customSelect-max').val(customRange[1]);
+        setCustomRangeUI.apply(this, customRange);
+      }
+    },
     getVal: function () {
       if (this.customValue !== null) {
         return this.customValue;
@@ -195,6 +217,21 @@
     }
   });
   
+  function setCustomRangeUI(min, max, event) {
+    var self = this,
+        formattingResult = self.options.customRangeHelper(min, max),
+        option;
+    
+    self._setWindowText(formattingResult[1]);
+    self.customValue = formattingResult[0];
+    
+    option = $('<option data-custom="true" value="' + formattingResult[0] + '">' + formattingResult[1] + '</option>');
+    self.element.find('option[data-custom]').remove();
+    self.element.append(option.attr('selected', true)).trigger('change', event);
+    self._trigger('change', event);
+    self.root.find('input:checked').attr('checked', false);
+  }
+  
   createCustomRange = function (root, list, options) {
     var customRangeHtml, errorDiv, min, max,
         self = this;
@@ -224,26 +261,22 @@
       if (isNaN(min) || isNaN(max)) {
         self.setCustomRangeError("Please enter only numbers.");
       } else {
-        if (max & min > max) {
+        if (min && max && min > max) {
           self.setCustomRangeError("Min cannot be bigger than max.");
         } else {
           if (self._trigger('rangechange', event, rangeChangeData)) {
             $('.ui-customSelect-error').hide();
-
-            formattingResult = options.customRangeHelper(min, max);
-            self._setWindowText(formattingResult[1]);
-            self.customValue = formattingResult[0];
-            
-            option = $('<option data-custom="true" value="' + formattingResult[0] + '">' + formattingResult[1] + '</option>');
-            self.element.find('option[data-custom]').remove();
-            self.element.append(option.attr('selected', true)).trigger('change', event);
-            self._trigger('change', event);
-            root.find('input:checked').attr('checked', false);
+            setCustomRangeUI.call(self, min, max, event);
             self._trigger('blur');
           }
         }
       }
     }
+    
+    // this.bind('customselectsubmitcustomrange', function () {
+    //   alert('hi');
+    //   customRangeHandler();
+    // });
     
     self.setCustomRangeError = function (error) {
       errorDiv.show().html(error);
