@@ -33,7 +33,8 @@ Sample CSS has been provided for you in src/jquery.customSelect.css. There's lot
 
 * placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
 * defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
-* customRangeHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'.
+* customRangeHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'. It has a sane default.
+* reverseRangeHelper a function that takes a custom value in string form, and splits it in to its min/max values. You only need to implement this if you change the customRangeHelper from its default.
 
 ## Methods
 

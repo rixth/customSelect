@@ -130,6 +130,12 @@ describe("customSelect", function () {
         expect(select.val()).toEqual('2p');
         expect(select.customSelect("getVal")).toEqual('2p');        
       });
+      
+      it("should be possible to programattically set a value", function () {
+        select.customSelect("setVal", '2p');
+        expect(select.customSelect("getVal")).toEqual('2p');
+        expect(windowText()).toBe('2+');
+      });
     });
     
     it("should be possible to remove options from the list", function () {
@@ -147,7 +153,7 @@ describe("customSelect", function () {
     });
     
     it("should be possible to add options to the list", function () {
-      select.append('<option name="10p">10+</option');
+      select.append('<option name="10p">10+</option>');
       select.customSelect("reload");
       
       var selectOptions = select.children('option').map(function () {
@@ -244,7 +250,7 @@ describe("customSelect", function () {
     });
     
     it("should be possible to add options to the list", function () {
-      select.append('<option name="10p">10+</option');
+      select.append('<option name="10p">10+</option>');
       select.customSelect("reload");
       
       var selectOptions = select.children('option').map(function () {
@@ -418,6 +424,14 @@ describe("customSelect", function () {
         fillValues(1, 10);
         rangeSubmit();
         expect(select.customSelect("getVal")).toBe("1-10");        
+      });
+      it("should be possible to programattically set a custom range", function () {
+        select.customSelect("setVal", '2-3');
+        expect(select.customSelect("getVal")).toEqual('2-3')
+        
+        expect(customSelect.find('.ui-customSelect-min').val()).toBe('2');
+        expect(customSelect.find('.ui-customSelect-max').val()).toBe('3');
+        expect(windowText()).toBe('2 to 3');
       });
     });
     
