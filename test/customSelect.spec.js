@@ -52,15 +52,21 @@ describe("customSelect", function () {
   
   describe("events", function () {
     it("should fire a change event on the native select and customSelect", function () {
-      var changeCallback = jasmine.createSpy();
+      var changeCallback = jasmine.createSpy(),
+          itemCallback = jasmine.createSpy();
       
       select.bind('change', changeCallback);
       select.bind('customselectchange', changeCallback);
+      select.bind('customselectchange', itemCallback);
       
       clickWindow();
-      customSelect.find('ul>li:first-child input').attr('checked', true).change();
+      customSelect.find('ul>li:nth-child(2) input').attr('checked', true).change();
       
       expect(changeCallback.callCount).toBe(2);
+      expect(itemCallback).toHaveBeenCalledWith(jasmine.any(Object), {
+        element: jasmine.any(Object),
+        value: "1p"
+      });
     });
     it("should fire a focus and blur event", function () {
       var blurCallback = jasmine.createSpy(),
