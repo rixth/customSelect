@@ -87,7 +87,10 @@
       root.delegate('li>input', 'change', function (event) {
         self._setWindowText();
         select.val(self.getVal()).trigger('change');
-        self._trigger('change', event);
+        self._trigger('change', event, {
+          element: this,
+          value: this.value
+        });
         $('.ui-customSelect-rangeContainer input').val('');
         $('.ui-customSelect-error').hide();
         self.customValue = null;

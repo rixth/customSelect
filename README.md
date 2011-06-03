@@ -54,7 +54,7 @@ These are the methods on the widget, call them like so
 
 As noted above, you can also bind to the standard events on the select.
 
-* change: fired whenever the user changes any of the inputs in the dropdown
+* change: fired whenever the user changes any of the inputs in the dropdown, is called with the original browser event, and a hash containing the input radio/checkbox and value of said item.
 * focus: fired when the dropdown is opened
 * blur: fired when the dropdown loses focus (and is closed)
 * disabled: fired when the widget is disabled
