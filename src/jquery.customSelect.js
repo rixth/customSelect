@@ -236,7 +236,7 @@
   }
   
   createCustomRange = function (root, list, options) {
-    var customRangeHtml, errorDiv, min, max,
+    var customRangeHtml, errorDiv, minInput, maxInput,
         self = this;
     
     customRangeHtml = [
