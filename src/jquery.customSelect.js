@@ -140,7 +140,7 @@
           customRange;
       
       if (existingOption.length) {
-        existingOption.attr('selected', true);
+        this.element.val(value);
         this.reload();
         this._setWindowText();
       } else {
