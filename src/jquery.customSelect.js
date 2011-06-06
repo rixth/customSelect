@@ -140,7 +140,7 @@
           customRange;
       
       if (existingOption.length) {
-        existingOption.attr('selected', true);
+        this.element.val(value);
         this.reload();
         this._setWindowText();
       } else {
@@ -236,7 +236,7 @@
   }
   
   createCustomRange = function (root, list, options) {
-    var customRangeHtml, errorDiv, min, max,
+    var customRangeHtml, errorDiv, minInput, maxInput,
         self = this;
     
     customRangeHtml = [
