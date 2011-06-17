@@ -73,18 +73,27 @@
 }
 
 
-.ui-customSelect-rangeContainer {
+.ui-customSelect-rangeContainer, .ui-customSelect-customValueContainer {
   background: #ECE9E9;
   padding: 5px;
   text-align: center;
   border-top: 1px solid #ccc;
 }
-.ui-customSelect-rangeContainer input {
+.ui-customSelect-customValueContainer {
+  border-top: none;
+  border-bottom: 1px solid #ccc;
+}
+.ui-customSelect-rangeContainer input, .ui-customSelect-customValueContainer input {
   border: 1px solid #ccc;
   display: inline-block;
-  width: 40%;
   vertical-align: middle;
   text-align: left;
+}
+.ui-customSelect-rangeContainer input {
+  width: 39%;
+}
+.ui-customSelect-customValueContainer input {
+  width: 95%;
 }
 .ui-customSelect-error {
   color: #900;
