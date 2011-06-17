@@ -28,13 +28,15 @@ Sample CSS has been provided for you in src/jquery.customSelect.css. There's lot
 
 * customRange (*default: false*) show min-max inputs to allow a user to enter a custom numeric range
 * customRanges (*default: empty*) an object with two keys, min and max, which are the starting values for the custom box.
+* customValue (*default: false*) show a single custom input box allowing the user to enter a custom value. If you pass a non-falsy non-boolean value (ie. a string) this will be used as the starting custom value.
+* customValuePlaceholder (*default: custom value*) the placeholder text displayed in the custom value input
+* customRangeHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'. It has a sane default.
+* reverseRangeHelper a function that takes a custom value in string form, and splits it in to its min/max values. You only need to implement this if you change the customRangeHelper from its default.
 
 ### These options only relate to multiple selects
 
 * placeholder (*default: Please select some items*): if you're using a multiple select and no options are selected, this is the text that is shown
 * defaultValue (*default: null*) if all options in a multiselect are unchecked, select this option.
-* customRangeHelper a function that a valid custom range is passed through. Is expected to return an array with two values, the first is the 'data' value, the second is the 'friendly' value that is displayed in the 'window'. It has a sane default.
-* reverseRangeHelper a function that takes a custom value in string form, and splits it in to its min/max values. You only need to implement this if you change the customRangeHelper from its default.
 
 ## Methods
 
@@ -60,3 +62,4 @@ As noted above, you can also bind to the standard events on the select.
 * disabled: fired when the widget is disabled
 * enabled: fired when the widget is enabled
 * rangechange: fired when the user attempts to set a custom range. This range is passed to your handler in the 2nd argument under the min/max keys. If you return false, the submission won't be accepted. You can use *setCustomRangeError* to set an error for the user.
+* customvaluechange: fired when the user attempts to set a custom value. This value is passed to your handler in the 2nd argument under the value key. If you return false, the submission won't be accepted. You can use *setCustomRangeError* to set an error for the user.

@@ -377,7 +377,7 @@ describe("customSelect", function () {
       });
       it("should show error messages from the data validation handlers", function () {                
         select.bind('customselectrangechange', function (event, data) {
-          data.widget.setCustomRangeError("LOLWUT");
+          data.widget.setCustomValueError("LOLWUT");
           return false;
         });
         
@@ -453,6 +453,150 @@ describe("customSelect", function () {
       var event = $.Event('keydown');
       event.which = 13;
       $('.ui-customSelect-min').trigger(event);
+    };
+  });
+  
+  describe("custom value", function () {
+    beforeEach(function () {
+      destroy();
+      resetSingle({
+        customValue: true
+      });
+    });
+    describe("creation", function () {
+      it("should create a custom value input when the option is specified", function () {
+        expect(customSelect).toContain('.ui-customSelect-customValue');
+      });
+      it("should not create custom input for a multiple select", function () {
+        destroy();
+        resetMultipleSelected({
+          customValue: true
+        });
+        expect(customSelect).not.toContain('.ui-customSelect-customValue');
+      });
+      it("should load the starting custom value if it is provided and display them in the window and input", function () {
+        destroy();
+        resetSingle({
+          customValue: 123
+        });
+        
+        expect(windowText()).toBe('123');
+        expect(select.val()).toBe('123');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('123');
+      });
+    });
+    describe("events", function () {
+      it("should fire data validation callbacks", function () {
+        var callback = jasmine.createSpy();
+                
+        select.bind('customselectcustomvaluechange', callback);
+        
+        fillValue("123");
+        valueSubmit();
+        
+        expect(callback).toHaveBeenCalledWith(jasmine.any(Object), { value: "123", widget: jasmine.any(Object)});
+      });
+      it("should fire change events on the native select", function () {
+        var callback = jasmine.createSpy();
+                
+        select.bind('change', callback);
+        
+        fillValue("123");
+        valueSubmit();
+        
+        expect(callback).toHaveBeenCalled()
+      });
+    });
+    describe("interaction", function () {
+      it("should submit the custom value upon pressing enter", function () {      
+        fillValue("123");
+        valueSubmit();
+        expect(select.val()).toBe('123');
+      });
+      it("should place the value in the window", function () {
+        fillValue("123");
+        valueSubmit();
+        expect(windowText()).toBe('123');
+      });
+      it("should uncheck all the radio boxes", function () {
+        var selectedItem = customSelect.find('li:nth-child(3)>input').attr('checked', true).change();
+        
+        expect(selectedItem).toBeChecked();
+        fillValue("123");
+        valueSubmit();
+        expect(selectedItem).not.toBeChecked();
+        expect(customSelect.find('input:checked')).not.toExist();
+      });
+      it("should hide error messages after a successful value", function () {
+        select.bind('customselectcustomvaluechange', function (event, ui) {
+          if (ui.value == 456) {
+            ui.widget.setCustomValueError('LOLBUTS');
+            return false;
+          }
+        });
+        
+        // customvaluechange
+        expect(select.val()).toBe('1p');
+        fillValue(456);
+        valueSubmit();
+        expect(select.val()).toBe('1p');
+        expect(customSelect.find('.ui-customSelect-error')).toBeVisible();
+        fillValue(123);
+        valueSubmit();
+        expect(select.val()).toBe('123');
+        expect(customSelect.find('.ui-customSelect-error')).not.toBeVisible();        
+      });
+      it("should show error messages from the data validation handlers", function () {                
+        select.bind('customselectcustomvaluechange', function (event, data) {
+          data.widget.setCustomValueError("LOLWUT");
+          return false;
+        });
+        
+        fillValue(123);
+        valueSubmit();
+        
+        expect(customSelect.find('.ui-customSelect-error')).toBeVisible();
+      });
+    });
+    describe("value", function () {
+      it("should create an option in the native select with the custom data attribute and select it", function () {
+        fillValue(123);
+        valueSubmit();
+        
+        var newOption = select.find('option[data-custom]:last-child');
+        expect(newOption).toExist();
+        expect(newOption).toHaveValue("123");
+      });
+      it("calling val() on the native select should retrieve our custom value", function () {
+        fillValue(123);
+        valueSubmit();
+        expect(select.val()).toBe("123");
+      });
+      it("calling getVal on the custom select should retrieve our custom value", function () {
+        fillValue(123);
+        valueSubmit();
+        expect(select.customSelect("getVal")).toBe("123");
+      });
+      it("should be possible to programattically set a custom range", function () {
+        select.customSelect("setVal", '123');
+        expect(select.customSelect("getVal")).toEqual('123');
+        
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('123');
+        expect(windowText()).toBe('123');
+      });
+    });
+    
+    /**
+     * Custom range test helpers
+     */
+    function fillValue(val) {
+      $('.ui-customSelect-customValue').val(val);
+    }
+    
+    function valueSubmit() {
+      var event = $.Event('keydown');
+      event.which = 13;
+      $('.ui-customSelect-customValue').trigger(event);
     };
   });
   

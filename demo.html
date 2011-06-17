@@ -48,6 +48,14 @@
       <option value="3p">3+ bedrooms</option>
     </select>
   </div>
+  <div class="container">
+    <h2>A custom-value select</h2>
+    <select id="valueSelect">
+      <option value="100">$100</option>
+      <option value="200">$200</option>
+      <option value="300">$300</option>
+    </select>
+  </div>
   
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
@@ -61,6 +69,12 @@
           value += ' bedrooms';
         }
         return value.replace(/bedrooms/, '<strong>bedrooms</strong>');
+      }
+    });
+    $('#valueSelect').customSelect({
+      customValue: true,
+      windowFormatter: function (value) {
+        return '$ <strong>' + value.replace(/^\$/, '') + '</strong>';
       }
     });
   </script>

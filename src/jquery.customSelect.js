@@ -8,13 +8,16 @@
   var openClass = 'ui-customSelect-open',
       disabledClass = 'ui-customRange-disabled',
       eventPrefix = 'customselect',
-      createCustomRange;
+      createCustomRange,
+      createCustomValue;
       
   $.widget("ui.customSelect", {
     options: {
       placeholder: 'Please select some items',
       defaultValue: null,
       customRange: false,
+      customValue: false,
+      customValuePlaceholder: 'custom value',
       customRanges: null,
       windowFormatter: function (value) {
         return value;
@@ -55,7 +58,7 @@
         throw new TypeError("jquery.customSelect expects a <select> element.");
       }
       
-      self.customValue = null;
+      self.userCustomValue = null;
       self.rootId = select.attr('id') + '_customSelect'
       
       // Create the base HTML, the window and dropdown
@@ -93,7 +96,7 @@
         });
         $('.ui-customSelect-rangeContainer input').val('');
         $('.ui-customSelect-error').hide();
-        self.customValue = null;
+        self.userCustomValue = null;
       });
             
       select.bind(eventPrefix + 'focus', function () {
@@ -131,8 +134,16 @@
         setDefaultItem();
       }
       
-      if (!self.isMultiple && options.customRange && createCustomRange) {
-        createCustomRange.call(self, root, this.list, options);
+      if (!self.isMultiple && (options.customRange || options.customValue)) {
+        self.setCustomValueError = function (error) {
+          root.find('.ui-customSelect-error').show().html(error);
+        };
+        
+        if (options.customRange) {
+          createCustomRange.call(self, root, this.list, options);
+        } else if (options.customValue) {
+          createCustomValue.call(self, root, this.list, options);
+        }
       }
     },
     setVal: function (value) {
@@ -144,15 +155,21 @@
         this.reload();
         this._setWindowText();
       } else {
-        customRange = this.options.reverseRangeHelper(value);
-        this.root.find('.ui-customSelect-min').val(customRange[0]);
-        this.root.find('.ui-customSelect-max').val(customRange[1]);
-        setCustomRangeUI.apply(this, customRange);
+        if (this.options.customRange) {
+          customRange = this.options.reverseRangeHelper(value);
+          this.root.find('.ui-customSelect-min').val(customRange[0]);
+          this.root.find('.ui-customSelect-max').val(customRange[1]);
+          setCustomUIValues.call(this, null, customRange);
+        } else if (this.options.customValue) {
+          this.root.find('.ui-customSelect-customValue').val(value);
+          setCustomUIValues.call(this, null, value);
+          
+        }
       }
     },
     getVal: function () {
-      if (this.customValue !== null) {
-        return this.customValue;
+      if (this.userCustomValue !== null) {
+        return this.userCustomValue;
       }
       
       var result = this.root.find('li>input:checked').map(function () {
@@ -220,20 +237,63 @@
     }
   });
   
-  function setCustomRangeUI(min, max, event) {
+  function setCustomUIValues(event, value) {
     var self = this,
-        formattingResult = self.options.customRangeHelper(min, max),
+        temp, displayValue, dataValue,
         option;
     
-    self._setWindowText(formattingResult[1]);
-    self.customValue = formattingResult[0];
+    if (self.options.customRange) {
+      temp = self.options.customRangeHelper(value[0], value[1]);
+      dataValue = temp[0];
+      displayValue = temp[1]
+    } else {
+      dataValue = displayValue = value;
+    }
     
-    option = $('<option data-custom="true" value="' + formattingResult[0] + '">' + formattingResult[1] + '</option>');
+    self._setWindowText(displayValue);
+    self.userCustomValue = dataValue;
+    
+    option = $('<option data-custom="true" value="' + dataValue + '">' + displayValue + '</option>');
     self.element.find('option[data-custom]').remove();
     self.element.append(option.attr('selected', true)).trigger('change', event);
     self._trigger('change', event);
     self.root.find('input:checked').attr('checked', false);
   }
+  
+  createCustomValue = function (root, list, options) {
+    var self = this,
+        optionValue = options.customValue,
+        input;
+    
+    list.before($([
+      '<div class="ui-customSelect-customValueContainer">',
+      '  <input class="ui-customSelect-customValue" placeholder="' + options.customValuePlaceholder + '" />',
+      '  <div style="display: none" class="ui-customSelect-error"></div>',
+      '</div>'
+    ].join('')));
+    
+    input = root.find('.ui-customSelect-customValue');
+    
+    function customValueHandler(event) {
+      var value = input.val();
+      if (self._trigger('customvaluechange', event, { value: value, widget: self })) {
+        $('.ui-customSelect-error').hide();
+        setCustomUIValues.call(self, event, value);
+        self._trigger('blur');
+      }
+    }
+    
+    if (typeof(optionValue) === 'string' || typeof(optionValue) === 'number') {
+      input.val(optionValue);
+      customValueHandler();
+    }
+    
+    input.bind('keydown', function (event) {
+      if (event.which === 13) {
+        customValueHandler(event);
+      }
+    });
+  };
   
   createCustomRange = function (root, list, options) {
     var customRangeHtml, errorDiv, minInput, maxInput,
@@ -249,7 +309,7 @@
     list.after($(customRangeHtml.join('')));
     minInput = root.find('.ui-customSelect-min');
     maxInput = root.find('.ui-customSelect-max');
-    errorDiv = root.find('.ui-customSelect-error');
+    errorDiv = root;
     
     function customRangeHandler(event) {
       var min = minInput.val(),
@@ -262,23 +322,19 @@
           formattingResult, option;
       
       if (isNaN(min) || isNaN(max)) {
-        self.setCustomRangeError("Please enter only numbers.");
+        self.setCustomValueError("Please enter only numbers.");
       } else {
         if (min && max && min > max) {
-          self.setCustomRangeError("Min cannot be bigger than max.");
+          self.setCustomValueError("Min cannot be bigger than max.");
         } else {
           if (self._trigger('rangechange', event, rangeChangeData)) {
             $('.ui-customSelect-error').hide();
-            setCustomRangeUI.call(self, min, max, event);
+            setCustomUIValues.call(self, event, [min, max]);
             self._trigger('blur');
           }
         }
       }
     }
-    
-    self.setCustomRangeError = function (error) {
-      errorDiv.show().html(error);
-    };
     
     if (options.customRanges) {
       minInput.val(options.customRanges.min);
