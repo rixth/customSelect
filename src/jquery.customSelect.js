@@ -88,13 +88,14 @@
       });
       
       root.delegate('li>input', 'change', function (event) {
+        self.userCustomValue = null;
         self._setWindowText();
         select.val(self.getVal()).trigger('change');
         self._trigger('change', event, {
           element: this,
           value: this.value
         });
-        $('.ui-customSelect-rangeContainer input').val('');
+        $('.ui-customSelect-rangeContainer input, .ui-customSelect-customValue').val('');
         $('.ui-customSelect-error').hide();
         self.userCustomValue = null;
       });
@@ -150,7 +151,7 @@
       var existingOption = this.element.find('option[value=' + value + ']'),
           customRange;
       
-      if (existingOption.length) {
+      if (existingOption.length && !existingOption[0].hasAttribute('data-custom')) {
         this.element.val(value);
         this.reload();
         this._setWindowText();
@@ -222,6 +223,8 @@
     reload: function () {
       // Remove all custom options
       this.element.find('option[data-custom]').remove();
+      this.root.find("input[type='text']").val('').blur();
+      this.userCustomValue = null;
       this._createFromSelect();
     },
     _setOption: function (name, value) {
@@ -267,7 +270,7 @@
     
     list.before($([
       '<div class="ui-customSelect-customValueContainer">',
-      '  <input class="ui-customSelect-customValue" placeholder="' + options.customValuePlaceholder + '" />',
+      '  <input class="ui-customSelect-customValue" type="text" placeholder="' + options.customValuePlaceholder + '" />',
       '  <div style="display: none" class="ui-customSelect-error"></div>',
       '</div>'
     ].join('')));
@@ -301,7 +304,7 @@
     
     customRangeHtml = [
       '<div class="ui-customSelect-rangeContainer">',
-      '  <input class="ui-customSelect-min" placeholder="min" /> to &nbsp;<input class="ui-customSelect-max" placeholder="max" />',
+      '  <input type="text" class="ui-customSelect-min" placeholder="min" /> to &nbsp;<input type="text" class="ui-customSelect-max" placeholder="max" />',
       '  <div style="display: none" class="ui-customSelect-error"></div>',
       '</div>'
     ];

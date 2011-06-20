@@ -584,6 +584,47 @@ describe("customSelect", function () {
         expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('123');
         expect(windowText()).toBe('123');
       });
+      it("should not freak out when setting the custom value multiple times", function () {
+        // Set the value & verify
+        select.customSelect("setVal", '123');
+        expect(select.customSelect("getVal")).toEqual('123');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('123');
+        expect(windowText()).toBe('123');
+        
+        // Set the custom value to the same amount again & verify
+        select.customSelect("setVal", '123');
+        expect(select.customSelect("getVal")).toEqual('123');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('123');
+        expect(windowText()).toBe('123');
+        
+        // Switch back to one of the defaults & verify
+        select.customSelect("setVal", '1p');
+        expect(select.customSelect("getVal")).toEqual('1p');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('');
+        expect(windowText()).toBe('1+');
+      });
+      it("should play nice when switching between custom and default types", function () {
+        // Click the default, make sure the custom input is blank
+        customSelect.find('li:nth-child(2)>input').attr('checked', true).change();
+        expect(select.customSelect("getVal")).toEqual('1p');
+        expect(select.val()).toEqual('1p');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('');
+        expect(windowText()).toBe('1+');
+
+        // Programatically set a custom value & verify
+        select.customSelect("setVal", '123');
+        expect(select.customSelect("getVal")).toEqual('123');
+        expect(select.val()).toEqual('123');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('123');
+        expect(windowText()).toBe('123');
+        
+        // Click the default, make sure the custom input is blank
+        customSelect.find('li:nth-child(2)>input').attr('checked', true).change();
+        expect(select.customSelect("getVal")).toEqual('1p');
+        expect(select.val()).toEqual('1p');
+        expect(customSelect.find('.ui-customSelect-customValue').val()).toBe('');
+        expect(windowText()).toBe('1+');
+      });
     });
     
     /**
