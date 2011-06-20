@@ -29,9 +29,9 @@ task('default', ['cleanLocal'], function () {
 desc("Fetch and build vendor files");
 task("vendor", ['cleanVendor'], function () {
   var vendorFiles = vendorFiles = [
-        'https://github.com/pivotal/jasmine/raw/master/lib/jasmine.js',
-        'https://github.com/pivotal/jasmine/raw/master/lib/jasmine-html.js',
-        'https://github.com/velesin/jasmine-jquery/raw/master/lib/jasmine-jquery.js'
+        'https://raw.github.com/pivotal/jasmine/master/lib/jasmine-core/jasmine.js',
+        'https://raw.github.com/pivotal/jasmine/master/lib/jasmine-core/jasmine-html.js',
+        'https://raw.github.com/velesin/jasmine-jquery/master/lib/jasmine-jquery.js'
       ];
   
   (function getVendorFiles(err, stdout, stderr) {
@@ -60,7 +60,7 @@ task("vendor", ['cleanVendor'], function () {
     }
   })();
 
-  exec('curl "https://github.com/pivotal/jasmine/raw/master/lib/jasmine.css" > test/vendor/jasmine.css');
+  exec('curl "https://raw.github.com/pivotal/jasmine/master/src/html/jasmine.css" > test/vendor/jasmine.css');
 });
 
 desc("Remove all of our code files from the master branch");
