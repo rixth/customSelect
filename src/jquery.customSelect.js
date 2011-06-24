@@ -151,7 +151,7 @@
       var existingOption = this.element.find('option[value=' + value + ']'),
           customRange;
       
-      if (existingOption.length && !existingOption[0].hasAttribute('data-custom')) {
+      if (existingOption.length && !existingOption[0].attributes['data-custom']) {
         this.element.val(value);
         this.reload();
         this._setWindowText();
