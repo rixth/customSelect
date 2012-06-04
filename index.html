@@ -3,8 +3,8 @@
 <head>
   <meta charset='utf-8'>
   <title>jQuery customSelect</title>
-  <link rel="stylesheet" href="style.css" />  
-  <link rel="stylesheet" href="src/jquery.customSelect.css" />  
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="src/jquery.customSelect.css" />
 </head>
 
 <body>
@@ -25,7 +25,7 @@
     <h1>
       <a href="http://github.com/rixth/customSelect">customSelect</a>
     </h1>
-    
+
     <p>
       A simple <a href="http://jqueryui.com">jQuery UI</a> widget to pretty up &lt;select&gt; elements and input custom ranges. It's fully unit tested too, you can <a href="test/">run the tests</a> if you like.
     </p>
@@ -36,11 +36,11 @@
     <p>
       It even works for multi selects.
     </p>
-    
+
     <pre>$('#yourSelect').customSelect();</pre>
-    
+
     <h2 style="margin-bottom: 0">Examples</h2>
-    
+
     <div class="example-container">
       <h2>A custom-range select</h2>
       <select id="rangeSelect">
@@ -67,13 +67,13 @@
     </div>
 
     <pre id="debug_log">Loading...</pre>
-    
+
     <h2>You might also like...</h2>
     <p>I've made a couple other form related jQuery UI widgets, <a href="http://rixth.github.com/customRadio/">jquery.customRadio</a> and <a href="http://rixth.github.com/bubbleBox/">jquery.bubbleBox</a>.</p>
 
 
     <h2 style="clear:both;padding-top:10px;">Download</h2>
-    
+
     <p>
       You can download this project in either
       <a href="http://github.com/rixth/customSelect/zipball/master">zip</a> or
@@ -88,18 +88,18 @@
       get the source code on GitHub : <a href="http://github.com/rixth/customSelect">rixth/customSelect</a>
     </div>
   </div>
-  
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
   <script src="src/jquery.customSelect.js"></script>
-  
+
   <script>
     $(document).ready(function () {
       $('#debug_log').html('Debug log...<br>');
       function debug(what) {
         $('#debug_log').append(what + "<br>");
       }
-      
+
       $('#singleSelect, #multipleSelect').customSelect({
         focus: function () {
           debug('Got focus');
@@ -111,7 +111,7 @@
           debug('Widget value changed');
         }
       });
-      
+
       $('#rangeSelect').customSelect({
         customRange: true,
         windowFormatter: function (value) {
@@ -121,13 +121,13 @@
           return value.replace(/bedrooms/, '<strong>bedrooms</strong>');
         }
       });
-      
+
       $('select').change(function () {
         debug('Native select value changed to: ' + $(this).val());
       });
     });
   </script>
-  
+
   <script>
 
     var _gaq = _gaq || [];
