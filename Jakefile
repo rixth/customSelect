@@ -2,7 +2,7 @@
 // Jakefile for customSelect
 //
 
-var sys = require('sys'),
+var sys = require('util'),
     exec  = require('child_process').exec;
 
 desc("This builds the uglified version of customSelect JS");
