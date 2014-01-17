@@ -226,6 +226,7 @@
       this.root.find("input[type='text']").val('').blur();
       this.userCustomValue = null;
       this._createFromSelect();
+      this._setWindowText();
     },
     _setOption: function (name, value) {
       if (name === 'disabled') {
